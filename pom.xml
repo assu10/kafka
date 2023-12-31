@@ -6,6 +6,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>chap03</module>
+        <module>chap03_interceptor</module>
     </modules>
 
     <parent>
