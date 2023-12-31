@@ -22,7 +22,7 @@ public class AvroProducer {
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
 
     // 에이브로 시리얼라이저의 설정 매개변수 설정
-    // 프로듀서가 시리얼라이저에 넘겨주는 값으로, 스키마를 저장해놓은 위치를 가리킴
+    // 프로듀서가 시리얼라이저에 넘겨주는 값으로, 스키마를 저장해놓은 위치를 가리킴 (= 스키마 레지스트리의 url 지정)
     props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://sample.schemaurl");
 
     String topic = "customerContacts";
