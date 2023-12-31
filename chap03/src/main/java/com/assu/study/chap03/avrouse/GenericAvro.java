@@ -10,6 +10,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class GenericAvro {
@@ -73,6 +74,9 @@ public class GenericAvro {
 
       // ProducerRecord 의 밸류값에 직접 지정한 스키마와 데이터가 포함된 GenericRecord 가 들어감
       ProducerRecord<String, GenericRecord> record = new ProducerRecord<>(topic, name, customer);
+
+      // 헤더 추가
+      record.headers().add("privacy", "TEST".getBytes(StandardCharsets.UTF_8));
 
       // 객체 전송 후엔 시리얼라이저가 레코드에서 스키마를 얻어오고, 스키마를 스키마 레지스트리에 저장하고,
       // 객체 데이터를 직렬화하는 과정을 알아서 함
