@@ -25,6 +25,7 @@
         <url/>
     </scm>
     <properties>
+        <kafka.version>3.8.0</kafka.version>
         <java.version>17</java.version>
     </properties>
     <dependencies>
@@ -48,6 +49,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka.version}</version>
         </dependency>
     </dependencies>
 
