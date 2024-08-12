@@ -1,10 +1,7 @@
 package com.assu.study.chap03;
 
 import java.util.Properties;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class ProducerSample {
@@ -55,6 +52,35 @@ public class ProducerSample {
     } catch (Exception e) {
       // 프로듀서가 카프카로 메시지를 보내기 전이나 전송하는 도중 발생하는 에러 캐치
       e.printStackTrace();
+    }
+  }
+
+  // 비동기적으로 메시지를 전송하면서 콜백으로 에러 처리
+  public void AsyncMessageSendWithCallback() {
+    Properties kafkaProp = new Properties();
+    kafkaProp.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    kafkaProp.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    kafkaProp.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+
+    Producer<String, String> producer = new KafkaProducer<>(kafkaProp);
+
+    // ProducerRecord 객체 생성
+    ProducerRecord<String, String> record =
+        new ProducerRecord<>("Topic_Country", "Key_Product", "Value_France");
+
+    // 레코드 전송 시 콜백 객체 전달
+    producer.send(record, new ProducerCallback());
+  }
+
+  // 콜백을 사용하려면 Callback 인터페이스를 구현하는 클래스 필요
+  private class ProducerCallback implements Callback {
+    @Override
+    public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+      if (e != null) {
+        // 카프카가 에러를 리턴하면 onCompletion() 메서드는 null 이 아닌 Exception 객체를 받음
+        // 실제로는 확실한 에러 처리 함수가 필요함
+        e.printStackTrace();
+      }
     }
   }
 }
