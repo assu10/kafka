@@ -1,0 +1,23 @@
+{
+    "namespace": "avrocustomer.avro",
+    "type": "record",
+    "name": "AvroCustomer",
+    "fields": [
+        {
+            "name": "id",
+            "type": "int"
+        },
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "email",
+            "type": [
+                "null",
+                "string"
+            ],
+            "default": null
+        }
+    ]
+}
