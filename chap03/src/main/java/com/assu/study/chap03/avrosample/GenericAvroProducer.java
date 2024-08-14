@@ -2,6 +2,7 @@ package com.assu.study.chap03.avrosample;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -68,6 +69,9 @@ public class GenericAvroProducer {
 
       // ProducerRecord 의 밸류값에 "직접 지정한 스키마와 데이터"가 포함된 GenericRecord 가 들어감
       ProducerRecord<String, GenericRecord> record = new ProducerRecord<>(topic, name, customer);
+
+      // 헤더 추가
+      record.headers().add("privacy-level", "YOLO".getBytes(StandardCharsets.UTF_8));
 
       // 시리얼라이저는 레코드를 스키마에서 얻어오고, 스키마 레지스트리에 저장하며,
       // 객체 데이터 직렬화하는 과정을 알아서 처리함
