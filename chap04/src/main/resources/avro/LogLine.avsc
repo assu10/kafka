@@ -1,0 +1,35 @@
+{
+  "namespace": "javasessionize.avro",
+  "type": "record",
+  "name": "LogLine",
+  "fields": [
+    {
+      "name": "ip",
+      "type": "string"
+    },
+    {
+      "name": "timestamp",
+      "type": "long"
+    },
+    {
+      "name": "url",
+      "type": "string"
+    },
+    {
+      "name": "referer",
+      "type": "string"
+    },
+    {
+      "name": "useragent",
+      "type": "string"
+    },
+    {
+      "name": "sessionid",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null
+    }
+  ]
+}
