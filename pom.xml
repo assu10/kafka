@@ -8,6 +8,7 @@
     <modules>
         <module>chap03</module>
         <module>chap04</module>
+        <module>chap04_simplemovingavg</module>
     </modules>
 
     <parent>
