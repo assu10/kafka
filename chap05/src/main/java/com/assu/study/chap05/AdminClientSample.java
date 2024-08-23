@@ -17,16 +17,18 @@ public class AdminClientSample {
   public static void main(String[] args) throws ExecutionException, InterruptedException {
     Properties props = new Properties();
     props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-    TopicDescription topicDescription;
-
+    props.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 1000); // optional
+    props.put(AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, 1000); // optional
     AdminClient adminClient = AdminClient.create(props);
+
+    TopicDescription topicDescription;
 
     // ======= 클러스터에 있는 토픽 목록 조회
 
     ListTopicsResult topics = adminClient.listTopics(); // Future 객체들을 ListTopicsResult 객체 리턴
     topics.names().get().forEach(System.out::println);
 
-    //adminClient.close(Duration.ofSeconds(30));
+    // adminClient.close(Duration.ofSeconds(30));
 
     // ======= 특정 토픽이 있는지 확인 후 없으면 토픽 생성
 
