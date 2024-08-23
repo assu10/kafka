@@ -1,10 +1,11 @@
 package com.assu.study.chap05;
 
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 
 @Slf4j
@@ -84,6 +85,48 @@ public class AdminClientSample {
         log.error("Topic was created with wrong number of partitions. Exiting.");
         System.exit(1);
       }
+    }
+
+    // ======= 토픽 압착(compacted) 설정 확인 및 교정
+
+    // 특정한 토픽의 설정 확인
+    ConfigResource configResource = new ConfigResource(ConfigResource.Type.TOPIC, TOPIC_NAME); // 1)
+    DescribeConfigsResult configsResult = adminClient.describeConfigs(List.of(configResource));
+    Config configs = configsResult.all().get().get(configResource);
+
+    // 기본값이 아닌 설정 출력
+    // describeConfig() 의 결과물인 DescribeConfigsResult 는 ConfigResource 를 key 로, 설정값의 모음을 value 로 갖는
+    // 맵임
+    // 각 설정 항목은 해당 값이 기본값에서 변경되었는지 확인할 수 있게 해주는 isDefault() 메서드를 가짐
+    // 토픽 설정이 기본값이 아닌 것으로 취급되는 경우는 2 가지 경우가 있음
+    // 1. 사용자가 토픽의 설정값을 기본값이 아닌 것으로 잡아준 경우
+    // 2. 브로커 단위 설정이 수정된 상태에서 토픽이 생성되어 기본값이 아닌 값을 브로커 설정으로부터 상속받은 경우
+    configs.entries().stream()
+        .filter(entry -> !entry.isDefault())
+        .forEach(System.out::println); // 2)
+
+    // 토픽에 압착 (compacted) 설정이 되어있는지 확인
+    ConfigEntry compaction =
+        new ConfigEntry(
+            TopicConfig.CLEANUP_POLICY_CONFIG,
+            TopicConfig.CLEANUP_POLICY_COMPACT); // cleanup.policy, compact
+
+    // 토픽에 압착 설정이 되어있지 않을 경우 압착 설정해 줌
+    if (!configs.entries().contains(compaction)) {
+      Collection<AlterConfigOp> configOp = new ArrayList<>();
+
+      // 설정을 변경하려면 변경하고자 하는 ConfigResource 를 key 로, 바꾸고자 하는 설정값 모음을 value 로 하는 맵을 지정함
+      // 각각의 설정 변경 작업은 설정 항목 (= 설정의 이름과 설정값. 여기서는 cleanup.policy 가 설정 이름이고, compact 가 설정값) 과 작업 유형으로
+      // 이루어짐
+      // 카프카에서는 4가지 형태의 설정 변경이 가능함
+      // 설정값을 잡아주는 SET / 현재 설정값을 삭제하고 기본값으로 되돌리는 DELETE / APPEND / SUBSTRACT
+      // APPEND 와 SUBSTRACT 는 목록 형태의 설정에만 사용 가능하며, 이걸 사용하면 전체 목록을 주고받을 필요없이 필요한 설정만 추가/삭제 가능함
+      configOp.add(new AlterConfigOp(compaction, AlterConfigOp.OpType.SET)); // 3)
+      Map<ConfigResource, Collection<AlterConfigOp>> alterConfigs = new HashMap<>();
+      alterConfigs.put(configResource, configOp);
+      adminClient.incrementalAlterConfigs(alterConfigs).all().get();
+    } else {
+      log.info("Topic {} is compacted topic.", TOPIC_NAME);
     }
 
     // ======= 토픽 삭제
