@@ -1,6 +1,5 @@
 package com.assu.study.chap05;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -27,7 +26,7 @@ public class AdminClientSample {
     ListTopicsResult topics = adminClient.listTopics(); // Future 객체들을 ListTopicsResult 객체 리턴
     topics.names().get().forEach(System.out::println);
 
-    adminClient.close(Duration.ofSeconds(30));
+    //adminClient.close(Duration.ofSeconds(30));
 
     // ======= 특정 토픽이 있는지 확인 후 없으면 토픽 생성
 
@@ -40,7 +39,7 @@ public class AdminClientSample {
       // (만일 토픽이 존재하지 않으면 서버가 상세 정보를 보내줄 수도 없음)
       // 이 경우 서버는 에러를 리턴할 것이고, Future 는 ExecutionException 을 발생시킴
       // 예외의 cause 에 들어있는 것이 서버가 실제 리턴한 실제 에러임
-      // 여기선 토픽이 존재하지 않을 경우를 처리하고 싶은 것이므로 이 예외를 처리해주어야 함
+      // 여기선 토픽이 존재하지 않을 경우를 처리하고 싶은 것 (= 토픽이 존재하지 않으면 토픽 생성) 이므로 이 예외를 처리해주어야 함
       topicDescription = sampleTopic.topicNameValues().get(TOPIC_NAME).get(); // 2)
       log.info("Description of sample topic: {}", topicDescription);
 
@@ -83,6 +82,18 @@ public class AdminClientSample {
         log.error("Topic was created with wrong number of partitions. Exiting.");
         System.exit(1);
       }
+    }
+
+    // ======= 토픽 삭제
+    adminClient.deleteTopics(TOPIC_LIST).all().get();
+
+    try {
+      // 토픽이 삭제되었는지 확인
+      // 삭제 작업이 비동기적으로 이루어지므로 이 시점에서 토픽이 여전히 남아있을 수 있음
+      sampleTopic.topicNameValues().get(TOPIC_NAME).get();
+      log.info("Topic {} is still around.");
+    } catch (ExecutionException e) {
+      log.info("Topic {} is gone.", TOPIC_NAME);
     }
   }
 }
