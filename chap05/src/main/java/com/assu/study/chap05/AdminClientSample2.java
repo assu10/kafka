@@ -133,5 +133,13 @@ public class AdminClientSample2 {
         log.error("Check if consumer group is still active.");
       }
     }
+
+    // ======= 클러스터 메타데이터 조회
+    DescribeClusterResult cluster = adminClient.describeCluster();
+
+    log.info("Connected to cluster: {}", cluster.clusterId().get());
+    log.info("The brokers in the cluster are: ");
+    cluster.nodes().get().forEach(node -> log.info("   * {}", node));
+    log.info("The controller is {}", cluster.controller().get());
   }
 }
