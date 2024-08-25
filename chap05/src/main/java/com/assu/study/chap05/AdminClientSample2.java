@@ -16,7 +16,6 @@ import org.apache.kafka.common.errors.UnknownMemberIdException;
 
 @Slf4j
 public class AdminClientSample2 {
-  // private static final String TOPIC_NAME = "sample-topic";
   private static final String CONSUMER_GROUP = "TestConsumerGroup";
   private static final List<String> CONSUMER_GROUP_LIST = List.of(CONSUMER_GROUP);
 
