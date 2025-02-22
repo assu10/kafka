@@ -11,6 +11,7 @@
         <module>chap04_simplemovingavg</module>
         <module>chap05</module>
         <module>chap08</module>
+        <module>chap14_1</module>
     </modules>
 
     <parent>
